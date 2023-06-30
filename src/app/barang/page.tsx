@@ -57,7 +57,8 @@ function Page() {
     setCari(e.target.value);
   };
 
-  const submit = async () => {
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     const price = harga.split(" ")[1].replace(/,/g, "");
     console.log(price);
 
@@ -175,7 +176,7 @@ function Page() {
         </main>
       </div>
       <Modal isVisible={visible} onClose={() => setVisble(false)}>
-        <form action="" onSubmit={submit} method="post">
+        <form action="" onSubmit={(e) => submit(e)} method="post">
           <h1 className="text-2xl text-center font-bold mb-5">Tambah Barang</h1>
           <p>Nama Barang</p>
           <input
