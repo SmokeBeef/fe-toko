@@ -10,7 +10,7 @@ import axiosJwt from "@/utils/axios";
 interface array {
   link: String;
   icon: IconType;
-  href: String;
+  href: string;
 }
 
 export default function Sidebar(): React.JSX.Element {
@@ -88,7 +88,7 @@ export default function Sidebar(): React.JSX.Element {
               className={`${
                 router === "/" + data.link && "bg-blue-500"
               } capitalize rounded-md py-1 duration-100 flex items-center gap-5 cursor-pointer hover:bg-blue-500`}
-              onClick={() => Router.push(data.href.toString())}
+              onClick={() => Router.push(data.href)}
             >
               <data.icon size={25} className="w-8 " />{" "}
               <span

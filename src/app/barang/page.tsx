@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import axiosJwt from "@/utils/axios";
 import Loader from "@/components/Loader";
 import Toast from "@/components/Toast";
-import swal from 'sweetalert2';
+import swal from "sweetalert2";
 
 function Page() {
   const [visible, setVisble] = useState(false);
@@ -58,10 +58,10 @@ function Page() {
   };
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     const price = harga.split(" ")[1].replace(/,/g, "");
     console.log(price);
-
+    setLoading(true);
     await axiosJwt
       .post("barang/add", {
         nama,
@@ -82,31 +82,32 @@ function Page() {
           icon: "error",
         });
       });
+    setLoading(false);
   };
 
   const onDelete = async (data: any) => {
-    swal.fire({
-      title: `Hapus Barang?`,
-      text: `Barang ${data.nama} akan dihapus`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yakin",
-      denyButtonText: "Batal",
-      reverseButtons: true
-    })
-    .then(async res => {
-      if(res.isConfirmed) {
-        await axiosJwt.delete(`barang/del/${data.id}`)
-        .then(res => {
-          if(res.status === 201)
-          Toast.fire({
-            title: "Success Delete",
-            icon: "success"
-          })
-          getData()
-        }) 
-      }
-    })
+    swal
+      .fire({
+        title: `Hapus Barang?`,
+        text: `Barang ${data.nama} akan dihapus`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yakin",
+        denyButtonText: "Batal",
+        reverseButtons: true,
+      })
+      .then(async (res) => {
+        if (res.isConfirmed) {
+          await axiosJwt.delete(`barang/del/${data.id}`).then((res) => {
+            if (res.status === 201)
+              Toast.fire({
+                title: "Success Delete",
+                icon: "success",
+              });
+            getData();
+          });
+        }
+      });
   };
   const onEdit = () => {};
 
@@ -148,8 +149,9 @@ function Page() {
                       {data.nama}
                       <br />
                       <button
-                      onClick={e => onDelete(data)}
-                      className="outline-1 outline-red-400 hover:text-slate-100 hover:bg-red-500 transition-colors duration-100 outline px-2 rounded">
+                        onClick={(e) => onDelete(data)}
+                        className="outline-1 outline-red-400 hover:text-slate-100 hover:bg-red-500 transition-colors duration-100 outline px-2 rounded"
+                      >
                         Hapus
                       </button>
                     </td>
@@ -202,7 +204,7 @@ function Page() {
               type="submit"
               className="bg-blue-600 text-slate-100 py-2 px-3 rounded-md hover:bg-blue-700"
             >
-              Submit
+              {loading? <Loader size={25}/> : "Submit"}
             </button>
           </div>
         </form>
