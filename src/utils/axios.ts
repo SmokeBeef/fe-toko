@@ -20,7 +20,7 @@ const axiosJwt = axios.create({
 //   return config;
 // });
 axiosJwt.interceptors.response.use(async (res) => {
-  console.log("ini erro " + res);
+  console.log("ini erro " + res.data);
 
   if (res.status >= 400)
     swal.fire({

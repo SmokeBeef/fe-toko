@@ -9,10 +9,14 @@ import axiosJwt from "@/utils/axios";
 import Loader from "@/components/Loader";
 import Toast from "@/components/Toast";
 import swal from "sweetalert2";
+import LoaderScreen from "@/components/LoaderScreen";
 
 function Page() {
   const [visible, setVisble] = useState(false);
+  const [visibleUpdate, setVisbleUpdate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState(false);
+  const [idBarang, setIdBarang] = useState<string>("");
   const [nama, setNama] = useState("");
   const [harga, setHarga] = useState<string>("");
   const [data, setdata] = useState<Array<any>>();
@@ -59,13 +63,13 @@ function Page() {
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const price = harga.split(" ")[1].replace(/,/g, "");
-    console.log(price);
+    console.log(harga);
+
     setLoading(true);
     await axiosJwt
       .post("barang/add", {
         nama,
-        harga: Number(price),
+        harga: Number(harga),
       })
       .then((res) => {
         Toast.fire({
@@ -85,7 +89,52 @@ function Page() {
     setLoading(false);
   };
 
-  const onDelete = async (data: any) => {
+  const submitUpdate = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    e.preventDefault();
+    console.log(harga);
+    setLoading(true);
+    await axiosJwt
+      .put(`barang/update/${idBarang}`, {
+        nama,
+        harga: Number(harga),
+      })
+      .then((res) => {
+        Toast.fire({
+          title: res.data.msg,
+          icon: "success",
+        });
+        setVisbleUpdate(false);
+        getData();
+        setNama("");
+        setHarga("");
+        setIdBarang("");
+      })
+      .catch((err) => {
+        Toast.fire({
+          title: err.response ? err.response.data.err : "error",
+          icon: "error",
+        });
+      });
+    setLoading(false);
+  };
+
+  interface data {
+    id: string;
+    nama: string;
+    harga: number;
+  }
+  const update = (data: data) => {
+    console.log(data);
+
+    setNama(data.nama);
+    setHarga(data.harga.toString());
+    setIdBarang(data.id);
+    setVisbleUpdate(true);
+    console.log(harga);
+  };
+  const onDelete = async (data: data) => {
     swal
       .fire({
         title: `Hapus Barang?`,
@@ -98,7 +147,9 @@ function Page() {
       })
       .then(async (res) => {
         if (res.isConfirmed) {
+          setLoadingScreen(true);
           await axiosJwt.delete(`barang/del/${data.id}`).then((res) => {
+            setLoadingScreen(false);
             if (res.status === 201)
               Toast.fire({
                 title: "Success Delete",
@@ -109,7 +160,6 @@ function Page() {
         }
       });
   };
-  const onEdit = () => {};
 
   return (
     <div className="font-Poppins">
@@ -158,7 +208,10 @@ function Page() {
                     <td className="p-2">
                       {formatHarga(data.harga.toString())}
                       <br />
-                      <button className="outline-1 outline-green-600 hover:bg-green-500 hover:text-slate-100 transition-colors duration-100 outline px-2 rounded">
+                      <button
+                        onClick={() => update(data)}
+                        className="outline-1 outline-green-600 hover:bg-green-500 hover:text-slate-100 transition-colors duration-100 outline px-2 rounded"
+                      >
                         Edit
                       </button>
                     </td>
@@ -186,29 +239,79 @@ function Page() {
             className="mb-5 pb-1 pt-2 px-3 w-full border-l  rounded-md drop-shadow-sm focus:drop-shadow-lg outline-none border-b transition-all border-blue-600  "
             value={nama}
             onChange={(e) => changeHandle(e, setNama)}
-            name="email"
+            name="nama barang"
+            placeholder="Rokok Surya 12 atau Rinso 25gr"
+            required
+            max={100}
+          />
+          <p>Harga</p>
+          <CurrencyInput
+            className="mb-5 pb-1 pt-2 px-3 w-full border-l  rounded-md drop-shadow-sm focus:drop-shadow-lg outline-none border-b transition-all border-blue-600  "
+            onChange={(e) => {
+              console.log(e.target.value);
+              
+              setHarga(e.target.value.replace(/,/g, ""))
+
+              
+            }}name="harga"
+            placeholder="2.000"
+            required
+          />
+          <div className="flex ">
+            <button
+              type="submit"
+              className="bg-blue-600 w-full text-slate-100 py-2 px-3 rounded-md hover:bg-blue-700"
+            >
+              {loading ? <Loader size={23} /> : "Submit"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+      <Modal
+        isVisible={visibleUpdate}
+        onClose={() => {
+          setNama("");
+          setHarga("");
+          setIdBarang("");
+          setVisbleUpdate(false);
+        }}
+      >
+        <form action="" onSubmit={(e) => submitUpdate(e)} method="post">
+          <h1 className="text-2xl text-center font-bold mb-5">Update Barang</h1>
+          <p>Nama Barang</p>
+          <input
+            type="text"
+            className="mb-5 pb-1 pt-2 px-3 w-full border-l  rounded-md drop-shadow-sm focus:drop-shadow-lg outline-none border-b transition-all border-blue-600  "
+            value={nama}
+            onChange={(e) => changeHandle(e, setNama)}
+            name="nama barang"
             placeholder="Rokok Surya 12 atau Rinso 25gr"
             required
           />
           <p>Harga</p>
           <CurrencyInput
-            prefix="Rp. "
             className="mb-5 pb-1 pt-2 px-3 w-full border-l  rounded-md drop-shadow-sm focus:drop-shadow-lg outline-none border-b transition-all border-blue-600  "
-            onChange={(e) => changeHandle(e, setHarga)}
+            onChange={(e) => {
+              setHarga(e.target.value.replace(/,/g, ""))
+              console.log(harga);
+              
+            }}
             name="harga"
-            placeholder="2.000"
+            placeholder="Rp. 2.000"
             required
+            defaultValue={harga}
           />
-          <div className="flex">
+          <div className="flex ">
             <button
               type="submit"
-              className="bg-blue-600 text-slate-100 py-2 px-3 rounded-md hover:bg-blue-700"
+              className="bg-blue-600 w-full text-slate-100 py-2 px-3 rounded-md hover:bg-blue-700"
             >
-              {loading? <Loader size={25}/> : "Submit"}
+              {loading ? <Loader size={23} /> : "Submit"}
             </button>
           </div>
         </form>
       </Modal>
+      {loadingScreen && <LoaderScreen />}
     </div>
   );
 }

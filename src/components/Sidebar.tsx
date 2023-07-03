@@ -6,6 +6,7 @@ import { IconType } from "react-icons/lib/esm/iconBase";
 import { usePathname, useRouter } from "next/navigation";
 import { MdLogout } from "react-icons/md";
 import axiosJwt from "@/utils/axios";
+import LoaderScreen from "./LoaderScreen";
 
 interface array {
   link: String;
@@ -15,6 +16,7 @@ interface array {
 
 export default function Sidebar(): React.JSX.Element {
   const [open, setOpen] = useState(false);
+  const [loadingScreen, setLoadingScreen] = useState(false);
   const router = usePathname();
   const Router = useRouter();
 
@@ -88,7 +90,11 @@ export default function Sidebar(): React.JSX.Element {
               className={`${
                 router === "/" + data.link && "bg-blue-500"
               } capitalize rounded-md py-1 duration-100 flex items-center gap-5 cursor-pointer hover:bg-blue-500`}
-              onClick={() => Router.push(data.href)}
+              onClick={() => {
+                setLoadingScreen(true);
+                Router.push(data.href);
+                setLoadingScreen(false);
+              }}
             >
               <data.icon size={25} className="w-8 " />{" "}
               <span
@@ -112,6 +118,7 @@ export default function Sidebar(): React.JSX.Element {
           </li>
         </ul>
       </div>
+      {loadingScreen && <LoaderScreen />}
     </div>
   );
 }
