@@ -249,12 +249,12 @@ function Page() {
             className="mb-5 pb-1 pt-2 px-3 w-full border-l  rounded-md drop-shadow-sm focus:drop-shadow-lg outline-none border-b transition-all border-blue-600  "
             onChange={(e) => {
               console.log(e.target.value);
-              
-              setHarga(e.target.value.replace(/,/g, ""))
 
-              
-            }}name="harga"
+              setHarga(e.target.value.replace(/,/g, ""));
+            }}
+            name="harga"
             placeholder="2.000"
+            maxLength={8}
             required
           />
           <div className="flex ">
@@ -292,14 +292,14 @@ function Page() {
           <CurrencyInput
             className="mb-5 pb-1 pt-2 px-3 w-full border-l  rounded-md drop-shadow-sm focus:drop-shadow-lg outline-none border-b transition-all border-blue-600  "
             onChange={(e) => {
-              setHarga(e.target.value.replace(/,/g, ""))
+              setHarga(e.target.value.replace(/,/g, ""));
               console.log(harga);
-              
             }}
             name="harga"
             placeholder="Rp. 2.000"
             required
             defaultValue={harga}
+            maxLength={8}
           />
           <div className="flex ">
             <button

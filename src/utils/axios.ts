@@ -3,7 +3,7 @@ import jwtDecode from "jwt-decode";
 import swal from "sweetalert2";
 // const token: string = localStorage.getItem("token") || "";
 const axiosJwt = axios.create({
-  baseURL: "https://be-toko-8dh753x58-smokebeef.vercel.app/",
+  baseURL: "https://be-toko.vercel.app/",
   // withCredentials: true,
   // headers: {
   //   Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -19,15 +19,15 @@ const axiosJwt = axios.create({
 
 //   return config;
 // });
-axiosJwt.interceptors.response.use(async (res) => {
-  console.log("ini erro " + res.data);
+// axiosJwt.interceptors.response.use(async (res) => {
+//   console.log("ini erro " + res.data);
 
-  if (res.status >= 400)
-    swal.fire({
-      title: "error",
-      icon: "error",
-    });
+//   if (res.status >= 400)
+//     swal.fire({
+//       title: "error",
+//       icon: "error",
+//     });
 
-  return res;
-});
+//   return res;
+// });
 export default axiosJwt;
